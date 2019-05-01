@@ -3,39 +3,79 @@
 #include "timer.h"
 
 // globals
-static u_char stick;
 static u_int gameFrame = 0;
 static u_char gameFrameMod60 = 0, gameFrameMod10 = 0;
 static bool gameFrameSecFlag;
 
+// custom stuff
+// implement this
+
+typedef struct {
+  char x;
+  char y;
+} Star;
+
+#define MAX_STARS 30
+
+static Star stars[MAX_STARS];
+
 void initGraphics() {
   // implement this
-	set_color(15, 1, 1);
-	set_mode(mode_1);
+  set_color(15, 1, 1);
+  set_mode(mode_1);
 }
 
-void initSoundDriver() {
+void initSound() {
   // implement this
 }
 
 void initGameState() {
   // implement this
+  char i;
+  for (i=0; i<MAX_STARS; i++) {
+    stars[i].x = random16() % 32;
+    stars[i].y = random16() % 24;
+  }
 }
 
 void gameTick() {
   // implement this
-  const char* text = "Hello world!";
-  vwrite_fast(text, 6144, 12);
+  char i;
+  for (i=0; i<MAX_STARS; i++) {
+    if (--stars[i].x < 0) {
+      stars[i].x = 31;
+      stars[i].y = random16() % 24;
+    }
+  }
 }
 
-void soundDriverTick() {
+void graphicsTick() {
+  // implement this
+  char i;
+  u_int addr;
+  vdp_set_address(6144);
+  vdp_send_value(' ', 0);
+  vdp_send_value(' ', 0);
+  vdp_send_value(' ', 0);
+  for (i=0; i<MAX_STARS; i++) {
+    addr = 6144 + stars[i].y * 32 + stars[i].x;
+    vdp_set_address(addr);
+    vdp_send_value('.', 1);
+  }
+}
+
+void soundTick() {
   // implement this
 }
 
 void initGame() {
+  DI;
+  disableScreen();
   initGraphics();
-  initSoundDriver();
+  initSound();
   initGameState();
+  enableScreen();
+  EI;
 }
 
 void game() {
@@ -46,8 +86,6 @@ void game() {
   initGame();
   while (true) {
     waitVBlank();
-    stick = get_stick(0);
-
     if (gameFrameMod60 == 60) {
       gameFrameMod60 = 0;
       gameFrameSecFlag = true;
@@ -60,8 +98,11 @@ void game() {
       }
     }
     if (shouldTick) {
+      DI;
+      graphicsTick();
+      EI;
+      soundTick();
       gameTick();
-      soundDriverTick();
       ++gameFrame;
       gameFrameSecFlag = false;
     }

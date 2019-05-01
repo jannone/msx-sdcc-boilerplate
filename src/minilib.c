@@ -2,6 +2,8 @@
 
 #pragma disable_warning 85
 
+#define MODE2_ATTR (8192)
+
 const u_char st_dir[] = {
   0x00, // 0
   0x01, // 1
@@ -52,7 +54,6 @@ __endasm;
 }
 
 void init() {
-  // TODO: delimitare con #ifdef ROM ?
   relocate_callbios_from_rom_to_ram();
 }
 
@@ -221,12 +222,10 @@ __asm
 	; enter vdp address pointer
 
 	ld a, 4(ix)
-	;di
 	out (p_vdp_cmd), a
 	ld a, 5(ix)
 	and #0x3f
 	or  #0x40
-	;ei
 	out (p_vdp_cmd), a
 
 	; enter data
@@ -246,9 +245,9 @@ __asm
 	ld	ix,#0
 	add	ix,sp
 
-        f_filvrm .equ #0x0056
+	f_filvrm .equ #0x0056
 
-        push af
+	push af
 	push bc
 	push hl
 
@@ -348,7 +347,6 @@ __asm
 	ld c, a
 
 	; set VRAM address
-	di
 	out	(c), e
 	set 6, d
 	out	(c), d
@@ -357,7 +355,6 @@ __asm
 	; the next instructions provide the correct timing for VDP as well
 	dec c
 
-	ei
 	nop
 
 vwrite_fast_loop:
@@ -388,7 +385,6 @@ __asm
 	ld c, a
 
 	; set VRAM address
-	di
 	out	(c), e
 	set 6, d
 	out	(c), d
@@ -397,7 +393,6 @@ __asm
 	; the next instructions provide the correct timing for VDP as well
 	dec c
 
-	ei
 	nop
 
 vfill_fast_loop:
@@ -489,4 +484,25 @@ void clearSprites() {
 __asm
   call #0x0069
 __endasm;
+}
+
+u_int random16() {
+__asm
+rand16:
+	ld BC,(#0xF40B)
+	ld HL,#253
+	xor A
+	sbc HL,BC
+	sbc A,B
+	sbc HL,BC
+	sbc A,B
+	ld C,A
+	sbc HL,BC
+	jr nc,rand16end
+	inc HL
+rand16end:
+	ld (#0xF40B),HL
+	ret
+__endasm;
+	return *(u_int*)(0xF40B);
 }

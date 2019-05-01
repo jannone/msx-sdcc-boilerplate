@@ -13,12 +13,13 @@ ROM16KSKIP?=1
 CRTOBJ?=sdcc/crt/crt0msx.32k.4000.rel
 CRTSRC?=sdcc/crt/crt0msx.32k.4000.s
 
-CFLAGS?=--code-loc 0x4020 --data-loc 0xc000 -mz80 --no-std-crt0 --fsigned-char
+CFLAGS?=-mz80 --no-std-crt0 --fsigned-char
+LDFLAGS?=--code-loc 0x4020 --data-loc 0xc000 
 
 SRCDIR=src
 DISTDIR=dist
 
-SRCFILES=$(wildcard $(SRCDIR)/*.c)
+SRCFILES=$(SRCDIR)/main.c $(filter-out $(SRCDIR)/main.c, $(wildcard $(SRCDIR)/*.c))
 OBJFILES := $(patsubst $(SRCDIR)/%.c,$(DISTDIR)/%.rel,$(SRCFILES))
 
 all: $(DISTDIR) $(DISTDIR)/program.rom
@@ -40,7 +41,7 @@ $(DISTDIR)/%.sdccsym: $(DISTDIR)/%.noi
 	-$(UNIX_GREP) -v "_end: equ " $<tmp > $@
 
 $(DISTDIR)/program.ihx: $(OBJFILES) $(CRTOBJ)
-	$(SDCC) $(CFLAGS) $(LDFLAGS) -o$@ $(OBJFILES) $(CRTOBJ)
+	$(SDCC) $(CFLAGS) $(LDFLAGS) -o$@ $(CRTOBJ) $(OBJFILES)
 
 $(DISTDIR)/heap.rel: $(DISTDIR)/heap.s
 	$(SDAS) -o heap.rel heap.s

@@ -3,12 +3,6 @@
 
 #include "defs.h"
 
-#define MODE2_ATTR	(8192)
-#define SDCC_NAKED_FN __naked
-#define DI __asm di __endasm
-#define EI __asm ei __endasm
-#define VRAM_3RD_SECTION (256 * 8 * 2)
-
 enum video_mode {
 	mode_0 = 0x6C,
 	mode_1 = 0x6F,
@@ -49,6 +43,7 @@ void put_sprite_16(const u_char id, const int x, const int y, const u_char handl
 void enableScreen();
 void disableScreen();
 void clearSprites();
+u_int random16();
 
 // experimental
 void vwrite_fast(void *source, u_int dest, u_char count) __naked;

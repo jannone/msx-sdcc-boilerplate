@@ -1,7 +1,6 @@
 ; crt0 for MSX ROM of 16KB, starting at 0x4000
 ; suggested options: --code-loc 0x4020 --data-loc 0xc000
 
-.globl	_init
 .globl	_main
 .globl _putchar
 .globl _getchar
@@ -41,8 +40,7 @@
 
 init:
 	ld      sp,(0xfc4a) ; Stack at the top of memory.
-  	call    gsinit ; Initialise global variables
-	call    _init ; init gfxlib
+  call    gsinit ; Initialise global variables
 	call    _main 
 	call    #0x0000; call CHKRAM
         
@@ -104,5 +102,3 @@ gsinit_next:
         pop bc
         pop af
 	ret
-
-        
