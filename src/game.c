@@ -33,8 +33,8 @@ void initGameState() {
   // implement this
   char i;
   for (i=0; i<MAX_STARS; i++) {
-    stars[i].x = random16() % 32;
-    stars[i].y = random16() % 24;
+    stars[i].x = get_random16() % 32;
+    stars[i].y = get_random16() % 24;
   }
 }
 
@@ -44,7 +44,7 @@ void gameTick() {
   for (i=0; i<MAX_STARS; i++) {
     if (--stars[i].x < 0) {
       stars[i].x = 31;
-      stars[i].y = random16() % 24;
+      stars[i].y = get_random16() % 24;
     }
   }
 }
@@ -70,11 +70,11 @@ void soundTick() {
 
 void initGame() {
   DI;
-  disableScreen();
+  bios_disable_screen();
   initGraphics();
   initSound();
   initGameState();
-  enableScreen();
+  bios_enable_screen();
   EI;
 }
 

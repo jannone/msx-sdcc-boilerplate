@@ -32,7 +32,6 @@ void psg_init();
 u_char get_vdp(u_char reg);
 void set_vdp(u_char reg, u_char value) __naked;
 void vwrite(void *source, u_int dest, u_int count) __naked;
-void vpoke(u_int addr, u_char value) __naked;
 void vfill(u_int addr, u_char value, u_int count) __naked;
 void set_color(u_char front, u_char back, u_char border);
 void set_mangled_mode();
@@ -40,16 +39,14 @@ void set_sprite_mode(u_char mode);
 void set_sprite_16(u_char handle, void *data);
 void buffer_sprite_16(sprite_t *sp, const int x, const int y, const u_char handle, const u_char color);
 void put_sprite_16(const u_char id, const int x, const int y, const u_char handle, const u_char color);
-void enableScreen();
-void disableScreen();
-void clearSprites();
-u_int random16();
-
-// experimental
 void vwrite_fast(void *source, u_int dest, u_char count) __naked;
 void vfill_fast(u_int addr, u_char value, u_char count) __naked;
 void vdp_set_address(u_int addr) __naked;
 void vdp_send_value(u_char value, u_char count) __naked;
 void vdp_send_data(void *source, u_char count) __naked;
+void bios_enable_screen();
+void bios_disable_screen();
+void bios_clear_sprites();
+u_int get_random16();
 
 #endif
