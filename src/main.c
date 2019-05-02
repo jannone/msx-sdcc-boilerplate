@@ -1,8 +1,8 @@
 #include "defs.h"
 #include "minilib.h"
-#include "game.h"
+#include "loop.h"
 
 void main() __naked {
   init();
-  game();
+  loop();
 }

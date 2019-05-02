@@ -1,14 +1,8 @@
 #include "defs.h"
 #include "minilib.h"
-#include "timer.h"
 
-// globals
-static u_int gameFrame = 0;
-static u_char gameFrameMod60 = 0, gameFrameMod10 = 0;
-static bool gameFrameSecFlag;
-
-// custom stuff
-// implement this
+// Here you can add your static variables and definitions.
+// Of course, you are free to create new files.
 
 typedef struct {
   char x;
@@ -19,18 +13,23 @@ typedef struct {
 
 static Star stars[MAX_STARS];
 
+// initGraphics: initialize your graphics mode here
+// you can also load any graphics resources
 void initGraphics() {
-  // implement this
   set_color(15, 1, 1);
   set_mode(mode_1);
 }
 
+// initSound: initialize your sound driver here
+// you can also load any sound and music resources
 void initSound() {
-  // implement this
 }
 
+// initGameState: initialize your game variables here
+// you probably want to have a state to tell what is the current
+// status of the game (introduction, menu, level, game over...)
+// you can load additional resources, such as levels, enemy positions, etc
 void initGameState() {
-  // implement this
   char i;
   for (i=0; i<MAX_STARS; i++) {
     stars[i].x = get_random16() % 32;
@@ -38,8 +37,8 @@ void initGameState() {
   }
 }
 
+// gameTick: add game logic that runs at every frame
 void gameTick() {
-  // implement this
   char i;
   for (i=0; i<MAX_STARS; i++) {
     if (--stars[i].x < 0) {
@@ -49,6 +48,7 @@ void gameTick() {
   }
 }
 
+// gameTick: render/update your game at every frame
 void graphicsTick() {
   // implement this
   char i;
@@ -64,49 +64,6 @@ void graphicsTick() {
   }
 }
 
+// soundTick: emit sound at every frame
 void soundTick() {
-  // implement this
-}
-
-void initGame() {
-  DI;
-  bios_disable_screen();
-  initGraphics();
-  initSound();
-  initGameState();
-  bios_enable_screen();
-  EI;
-}
-
-void game() {
-  const bool is60hz = ((*(u_char*)0x002b) & 128) == 0;
-  bool shouldTick;
-
-  initTimerHook();
-  initGame();
-  while (true) {
-    waitVBlank();
-    if (gameFrameMod60 == 60) {
-      gameFrameMod60 = 0;
-      gameFrameSecFlag = true;
-    }
-    shouldTick = true;
-    if (gameFrameMod10 == 10) {
-      gameFrameMod10 = 0;
-      if (is60hz) {
-        shouldTick = false;
-      }
-    }
-    if (shouldTick) {
-      DI;
-      graphicsTick();
-      EI;
-      soundTick();
-      gameTick();
-      ++gameFrame;
-      gameFrameSecFlag = false;
-    }
-    ++gameFrameMod60;
-    ++gameFrameMod10;
-  }
 }
